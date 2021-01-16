@@ -1,0 +1,38 @@
+{
+  "name": "wallystreetbets-bot",
+  "version": "0.1.0",
+  "description": "Twitter bot for generating sentences based on sentiment on WallStreetBets. This could go horribly wrong.",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "deploy": "npm run build && node build/server.js",
+    "start": "nodemon",
+    "build": "rimraf ./build && tsc",
+    "tsc": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomwilliamfranklin/wallystreetbets-bot.git"
+  },
+  "keywords": [],
+  "author": "Tom Franklin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tomwilliamfranklin/wallystreetbets-bot/issues"
+  },
+  "homepage": "https://github.com/tomwilliamfranklin/wallystreetbets-bot#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.7",
+    "@types/node": "^14.0.24",
+    "@types/twit": "^2.2.28",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "twit": "^2.2.11",
+    "typescript": "^3.9.7"
+  }
+}
