@@ -30,14 +30,40 @@ if(!process.env.consumer_key || !process.env.consumer_secret) {
         access_token_secret: process.env.access_token_secret,   
     });
 
-    // setTimeout(() => {
-    //     if(T) {
-    //         T.get('search/tweets', { q: 'banana since:2011-07-11', count: 100 }, function(err, data, response) {
-    //             console.log(data)
-    //         });    
-    //     }
-        
-    // }, 1);
+    setTimeout(() => {
+        if(T) {
+            const requestBody = { 
+                q: 'gamestop', 
+                count: 3 
+            };
+            // ? Get Example:
+            // T.get('search/tweets',  requestBody, 
+            //  (err, data: any, response) => {
+            //    const tweets = data.statuses;
+               
+            //     // const tweets = data.statuses;
+
+            //     for(var i = 0; i < tweets.length; i++) {
+            //         console.log(tweets[i].text);
+            //     }
+            // });    
+
+            // ? Post Example: 
+            // const tweet = {
+            //     status: 'This is a test.',
+            // }
+
+            // T.post('statuses/update', tweet, (err, data, response) => {
+            //    if(err) {
+            //        console.log("Something went wrong.");
+            //     } else {
+            //       //  console.log(data);
+            //       //  console.log(response);
+            //       console.log("Tweet made ", new Date());
+            //     }
+            // });
+        }
+    }, 1);
 
     console.log("2: Twitter API connected.");
 }
@@ -47,10 +73,5 @@ const port = process.env.PORT || 4200;
 app.listen(port, () => {
     console.log(`3: Ready and listening on port ${port}...`);
 });
-
-//#endregion
-
-
-//#region 
 
 //#endregion
