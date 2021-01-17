@@ -42,8 +42,11 @@ export class FullColonOv {
     const chains = [];
 
     for(let sentence in sentences) {
-      const chain =['START', ...sentences[sentence].split(' '), 'END'];
-      chains.push(chain);  
+      try {
+        const chain =['START', ...sentences[sentence].split(' '), 'END'];
+        chains.push(chain);  
+      } catch (e) {
+      }
     }
     // Find Transitions
     const transitions: any[] = [];

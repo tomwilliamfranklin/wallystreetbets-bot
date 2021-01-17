@@ -70,6 +70,8 @@ if(!process.env.consumer_key || !process.env.consumer_secret) {
 //#endregion
 
 import { FullColonOv } from './markov';
+import { RedditScrapper } from './redditScrapper';
+
 
 const port = process.env.PORT || 4200;
 app.listen(port, () => {
@@ -77,8 +79,18 @@ app.listen(port, () => {
 
     const markov = new FullColonOv();
 
-    const sentence = markov.generateSentence(['I like fruit tarts.', 'I like fruit tarts too.', 'What kind of fruit tart do you like?', 'I like mixed fruit tarts', 'I like cake fruit tarts', 'I am not sure what tarts I like.']);
-    console.log(sentence)
+    const redditScrapper = new RedditScrapper();
+
+    redditScrapper.getWallstreetBetsTop().then(titles => {
+        
+        const map: any = [];
+        Object.keys(titles).map((key: any) => map.push(titles[key]));
+
+        const sentence = markov.generateSentence(map);
+        
+        console.log(sentence)
+    });
+
 });
 
 //#endregion
