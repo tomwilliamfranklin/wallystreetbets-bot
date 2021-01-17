@@ -1,3 +1,4 @@
+import { promises } from 'fs';
 import snoowrap, { Submission } from 'snoowrap';
 
 export class RedditScrapper {
@@ -25,5 +26,50 @@ export class RedditScrapper {
           
 
           return map;
-        }
+    }
+
+    async getWallStreetBetsComments(): Promise<string[]> {
+      const topPosts = (await this.r.getSubreddit('wallstreetbets').getTop()).map(post => post);
+      
+      let comments: string[] = [];
+      // iterate through each top post today, get all the comments and add them to a massive
+      //array. 
+      // Promise.all(data.map) makes sure the async loop is finished. 
+      await Promise.all(topPosts.map(async tp => {
+         comments = comments.concat(await this.loadComments(tp));
+      }));
+      console.log("COMMENTS LENGTH: " + comments.length)
+      return comments;
+    }
+
+
+    async loadComments(topPost: Submission): Promise<string[]> {  
+      const comments: string[] = [];
+          await this.r.getSubmission(topPost.id).expandReplies({limit: 3, depth: 1}).then(resp => {
+            resp.comments.forEach(c => {
+              // trim whitespace on entire comment body
+              let text = c.body.trim();
+    
+              // collapse multiple line breaks
+              text = text.replace('\n+', '\n');
+              
+              // trim every line of comment
+              for(let line in text.split('\n')) {
+                line = line.trim();
+              }
+    
+              // Add full stop if line doesn't end in punctuation.
+              text = text.replace('([^.?!])(\n|$)', '\\1.\\2');
+    
+              // if comment length has more characters than 5
+              if(text.length > 3) {
+                comments.push(text);
+              }
+            });
+          });
+
+      return comments;
+    }
+
+
 }

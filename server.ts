@@ -39,11 +39,13 @@ app.listen(port, () => {
     const wally = new WallyBot();
 
     redditScrapper.getWallstreetBetsTop().then(titles => {
-        const sentence = markov.generateSentence(titles);
+        redditScrapper.getWallStreetBetsComments().then(comments => {
+         const sentence = markov.generateSentence(titles.concat(comments));
         
         console.log(sentence)
-        
-    //    wally.tweet(sentence);    
+
+        //wally.tweet(sentence);    
+        });
     });
 
 
