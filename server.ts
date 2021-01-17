@@ -69,9 +69,20 @@ if(!process.env.consumer_key || !process.env.consumer_secret) {
 }
 //#endregion
 
+import { FullColonOv } from './markov';
+
 const port = process.env.PORT || 4200;
 app.listen(port, () => {
     console.log(`3: Ready and listening on port ${port}...`);
+
+    const markov = new FullColonOv(['hello world', 'hello world', 'hello world', 'I like cake', 'Something something']);
+
+    console.log(markov.calcTransitionProbabilities());
+    
 });
+
+//#endregion
+
+//#region markov code
 
 //#endregion
