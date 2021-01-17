@@ -75,10 +75,10 @@ const port = process.env.PORT || 4200;
 app.listen(port, () => {
     console.log(`3: Ready and listening on port ${port}...`);
 
-    const markov = new FullColonOv(['hello world', 'hello world', 'hello world', 'I like cake', 'Something something']);
+    const markov = new FullColonOv();
 
-    console.log(markov.calcTransitionProbabilities());
-    
+    const sentence = markov.generateSentence(['I like fruit tarts.', 'I like fruit tarts too.', 'What kind of fruit tart do you like?', 'I like mixed fruit tarts', 'I like cake fruit tarts', 'I am not sure what tarts I like.']);
+    console.log(sentence)
 });
 
 //#endregion

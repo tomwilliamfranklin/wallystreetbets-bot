@@ -1,14 +1,13 @@
-import { stringify } from 'querystring';
-import { of, zip, pipe } from 'rxjs';
-import { skip } from 'rxjs/operators';
+
+import { of, zip } from 'rxjs';
+
 /** Class representing a Markov Chain generator */
 
 export class FullColonOv {
 
   sentences: string[] = [];
 
-  constructor(sentences: string[]) {
-    this.sentences = sentences;
+  constructor() {
   }
 
 
@@ -28,15 +27,22 @@ export class FullColonOv {
   //     return sentences;
   // }
 
+  generateSentence(text: string[]): string {
+    // todo parse text to lowercase etc
+    const transitionProbabilities = this.calcTransitionProbabilities(text);
+    const returnedChain = this.generate_chain(transitionProbabilities);
+    let sentence = returnedChain.slice(1, returnedChain.length-1).toString().replace(/,/g, ' ');
 
-  calcTransitionProbabilities() {
+    return sentence;
+  }
+
+  calcTransitionProbabilities(sentences: string[]) {
     // convert each sentence into a chain by splitting on words
     // and adding the start and end states
     const chains = [];
 
-    for(let sentence in this.sentences) {
-      //const chain = ['START', ...this.sentences[sentence].split(' '), 'END'];
-      const chain =['START', ...this.sentences[sentence].split(' '), 'END'];
+    for(let sentence in sentences) {
+      const chain =['START', ...sentences[sentence].split(' '), 'END'];
       chains.push(chain);  
     }
     // Find Transitions
@@ -101,6 +107,7 @@ export class FullColonOv {
     }
     //console.log(transitionCounts)
 
+    // calcs the transistion probabilities and then assigns them to each AFT word
     let transitionProbabilities: Map<string, Map<string, number>> = new Map<string, Map<string, number>>();
     transitionCounts.forEach((value: Map<string, number>, bef: string) => {
       if(!transitionProbabilities.get(bef)) {
@@ -112,7 +119,55 @@ export class FullColonOv {
           transitionProbabilities.get(bef)?.set(aft, probability);
       });
     });
+
+    this.nextState('hello', transitionProbabilities)
+
     return transitionProbabilities;
   }
+
+  nextState(current_state: string, transition_probabilities: Map<string, Map<string, number>>): any {
+    // Returns a random possible next state after current_state 
+    //based on transition_probabilities.
+
+    const choices = transition_probabilities.get(current_state)?.keys();
+    const weights = transition_probabilities.get(current_state)?.values();
+    const random = Math.random();
+
+    if(choices && weights)
+      return this.weighted_random(Array.from(choices), Array.from(weights));
+
+     // todo error logging
+  }
   
+  // selects a random next item based on the weight percentages given.
+  weighted_random(items: any[], weights: any[]) {
+    var i;
+
+    for (i = 0; i < weights.length; i++)
+        weights[i] += weights[i - 1] || 0;
+    
+    var random = Math.random() * weights[weights.length - 1];
+    
+    for (i = 0; i < weights.length; i++)
+        if (weights[i] > random)
+            break;
+    
+    return items[i];
+  }
+
+  generate_chain(transition_probabilities: Map<string, Map<string, number>>):  string[] {
+    // Generates a complete chain from START to END based on transition_probabilities.
+    const chain: any = [];
+
+    let curr = 'START';
+
+    while(true) {
+        chain.push(curr);
+
+        if(curr == 'END')
+          return chain;
+
+        curr = this.nextState(curr, transition_probabilities);
+    }
+  }
 }
