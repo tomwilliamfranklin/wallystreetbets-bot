@@ -29,31 +29,43 @@ if(!process.env.consumer_key || !process.env.consumer_secret) {
 
 
 const port = process.env.PORT || 4200;
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`3: Ready and listening on port ${port}...`);
 
     const markov = new FullColonOv();
 
     const redditScrapper = new RedditScrapper();
+    await redditScrapper.dailyDataRetrieval();
 
     const wally = new WallyBot();
 
-    redditScrapper.getWallstreetBetsTop().then(titles => {
-        redditScrapper.getWallStreetBetsComments().then(comments => {
-         const sentence = markov.generateSentence(titles.concat(comments));
-        
-        console.log(sentence)
+        setTimeout(async () => { // Get new data every 24 hours.
 
-        //wally.tweet(sentence);    
-        });
-    });
+            var dayMillseconds = 1000 * 60 * 60 * 24;
+            setInterval(async () => { // repeat this every 24 hours
+                await redditScrapper.dailyDataRetrieval();
+                
+                const tweetMessage = markov.generateSentence(redditScrapper.data);
+            
+            }, dayMillseconds)
+        }, tradingOpen());
 
+
+        // every hour tweet message
+        setInterval(async () => { // repeat this every 24 hours
+            const tweetMessage = markov.generateSentence(redditScrapper.data);
+
+           // console.log(tweetMessage)
+           wally.tweet(tweetMessage);
+        }, 25000);
 
 
 });
 
-//#endregion
 
-//#region markov code
+function tradingOpen(){
+    var d = new Date();
+    return (-d + d.setHours(16,0,0,0));
+}
 
 //#endregion

@@ -32,22 +32,22 @@ export class FullColonOv {
     const transitionProbabilities = this.calcTransitionProbabilities(text);
     const returnedChain = this.generate_chain(transitionProbabilities);
     let sentence = returnedChain.slice(1, returnedChain.length-1).toString().replace(/,/g, ' ');
-
+    sentence.replace('  ', '.');
     return sentence;
   }
 
   calcTransitionProbabilities(sentences: string[]) {
     // convert each sentence into a chain by splitting on words
     // and adding the start and end states
-    const chains = [];
-
+    const chains: any = [];
     for(let sentence in sentences) {
       try {
-        const chain =['START', ...sentences[sentence].split(' '), 'END'];
+        const chain =['START', ...this.splitString(sentences[sentence], 2), 'END'];
         chains.push(chain);  
       } catch (e) {
       }
     }
+
     // Find Transitions
     const transitions: any[] = [];
 
@@ -122,8 +122,8 @@ export class FullColonOv {
           transitionProbabilities.get(bef)?.set(aft, probability);
       });
     });
-
-    this.nextState('hello', transitionProbabilities)
+  // console.log(transitionProbabilities);
+   // this.nextState('hello', transitionProbabilities)
 
     return transitionProbabilities;
   }
@@ -172,5 +172,18 @@ export class FullColonOv {
 
         curr = this.nextState(curr, transition_probabilities);
     }
+  }
+
+  splitString(string: string, splitLength: number): string[] {
+
+    var random = Math.round(Math.random() * 2);
+    random === 0 ? random = 1 : random;
+    const arrayStrings = string.split(' ');
+    const newArrayStrings: string[] = [];
+    while(arrayStrings.length) {
+      newArrayStrings.push(arrayStrings.splice(0, random).join(' '));
+    }
+
+    return newArrayStrings;
   }
 }

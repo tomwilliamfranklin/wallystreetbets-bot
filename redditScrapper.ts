@@ -4,6 +4,7 @@ import snoowrap, { Submission } from 'snoowrap';
 export class RedditScrapper {
 
   r: snoowrap;
+  data: string[] = [];
 
     constructor() {
        this.r = new snoowrap({
@@ -13,8 +14,23 @@ export class RedditScrapper {
         username: process.env.reddit_username,
         password: process.env.reddit_password
       });
+
+      // initial Get
+      this.dailyDataRetrieval();
     }
 
+
+    async dailyDataRetrieval(): Promise<void> {
+      this.getWallstreetBetsTop().then(async titles => {
+        this.getWallStreetBetsComments().then(async comments => {
+          const newData = titles.concat(comments);
+        
+          this.data = newData; 
+
+          console.log("OVERALL DATA LENGTH: " + this.data.length);
+        });
+      });
+    }
 
     async getWallstreetBetsTop(): Promise<string[]> {
           // var titlesMaps = (await r.getHot()).map(post => post.title);
@@ -24,7 +40,7 @@ export class RedditScrapper {
           const map: any = [];
           Object.keys(wallstreetbets).map((key: any) => map.push(wallstreetbets[key]));
           
-
+          console.log("TITLES LENGTH: " + map.length);
           return map;
     }
 
@@ -36,7 +52,8 @@ export class RedditScrapper {
       //array. 
       // Promise.all(data.map) makes sure the async loop is finished. 
       await Promise.all(topPosts.map(async tp => {
-         comments = comments.concat(await this.loadComments(tp));
+        const commentsRetrived = await this.loadComments(tp);
+        comments = comments.concat(commentsRetrived);
       }));
       console.log("COMMENTS LENGTH: " + comments.length)
       return comments;
